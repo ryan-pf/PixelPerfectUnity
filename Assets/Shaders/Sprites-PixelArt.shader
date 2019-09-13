@@ -4,24 +4,24 @@ Shader "Sprites/PixelArt"
 {
     Properties
     {
-        [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
-        _Color ("Tint", Color) = (1,1,1,1)
-        [MaterialToggle] PixelSnap ("Pixel snap", Float) = 0
-        [HideInInspector] _RendererColor ("RendererColor", Color) = (1,1,1,1)
-        [HideInInspector] _Flip ("Flip", Vector) = (1,1,1,1)
-        [PerRendererData] _AlphaTex ("External Alpha", 2D) = "white" {}
-        [PerRendererData] _EnableExternalAlpha ("Enable External Alpha", Float) = 0
+        [PerRendererData] _MainTex("Sprite Texture", 2D) = "white" {}
+        _Color("Tint", Color) = (1,1,1,1)
+        [MaterialToggle] PixelSnap("Pixel snap", Float) = 0
+        [HideInInspector] _RendererColor("RendererColor", Color) = (1,1,1,1)
+        [HideInInspector] _Flip("Flip", Vector) = (1,1,1,1)
+        [PerRendererData] _AlphaTex("External Alpha", 2D) = "white" {}
+        [PerRendererData] _EnableExternalAlpha("Enable External Alpha", Float) = 0
     }
 
     SubShader
     {
         Tags
         {
-            "Queue"="Transparent"
-            "IgnoreProjector"="True"
-            "RenderType"="Transparent"
-            "PreviewType"="Plane"
-            "CanUseSpriteAtlas"="True"
+            "Queue" = "Transparent"
+            "IgnoreProjector" = "True"
+            "RenderType" = "Transparent"
+            "PreviewType" = "Plane"
+            "CanUseSpriteAtlas" = "True"
         }
 
         Cull Off
@@ -31,7 +31,7 @@ Shader "Sprites/PixelArt"
 
         Pass
         {
-        CGPROGRAM
+            CGPROGRAM
             #pragma vertex SpriteVert
             #pragma fragment SpritePixelArtFrag
             #pragma target 2.0
@@ -40,24 +40,24 @@ Shader "Sprites/PixelArt"
             #pragma multi_compile _ ETC1_EXTERNAL_ALPHA
             #include "UnitySprites.cginc"
 
-			float4 _MainTex_TexelSize;
-			
-			fixed4 SpritePixelArtFrag(v2f IN) : SV_Target
-			{
-				float2 texel = IN.texcoord.xy * _MainTex_TexelSize.zw;
-				float2 uv = floor(texel) + 0.5;
+            float4 _MainTex_TexelSize;
 
-				float2 scale = 1.0 / (abs(ddx(texel.xy)) + abs(ddy(texel.xy)));
+            fixed4 SpritePixelArtFrag(v2f IN) : SV_Target
+            {
+                float2 texel = IN.texcoord.xy * _MainTex_TexelSize.zw;
+                float2 uv = floor(texel) + 0.5;
 
-				uv += 1.0 - saturate((1.0 - frac(texel)) * scale);
+                float2 scale = 1.0 / (abs(ddx(texel.xy)) + abs(ddy(texel.xy)));
 
-				fixed4 c = SampleSpriteTexture(uv / _MainTex_TexelSize.zw) * IN.color;
-				c.rgb *= c.a;
+                uv += 1.0 - saturate((1.0 - frac(texel)) * scale);
 
-				return c;
-			}
+                fixed4 c = SampleSpriteTexture(uv / _MainTex_TexelSize.zw) * IN.color;
+                c.rgb *= c.a;
 
-        ENDCG
+                return c;
+            }
+
+            ENDCG
         }
     }
 }
